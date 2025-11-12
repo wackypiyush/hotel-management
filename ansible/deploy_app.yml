@@ -1,0 +1,41 @@
+---
+- name: Deploy Hotel Management App
+  hosts: webserver
+  become: true
+  vars:
+    region: ap-south-2
+    account_id: 278338841334
+    repo_name: hotel-management-repo
+    image_tag: latest
+
+  tasks:
+    - name: Install AWS CLI if not present
+      apt:
+        name: awscli
+        state: present
+        update_cache: yes
+
+    - name: Authenticate Docker to AWS ECR
+      shell: |
+        aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ account_id }}.dkr.ecr.{{ region }}.amazonaws.com
+      register: ecr_login
+      changed_when: "'Login Succeeded' in ecr_login.stdout"
+
+    - name: Pull image from ECR
+      community.docker.docker_image:
+        name: "{{ account_id }}.dkr.ecr.{{ region }}.amazonaws.com/{{ repo_name }}:{{ image_tag }}"
+        source: pull
+
+    - name: Stop old container if running
+      community.docker.docker_container:
+        name: hotel_app
+        state: stopped
+      ignore_errors: yes
+
+    - name: Run new container
+      community.docker.docker_container:
+        name: hotel_app
+        image: "{{ account_id }}.dkr.ecr.{{ region }}.amazonaws.com/{{ repo_name }}:{{ image_tag }}"
+        state: started
+        ports:
+          - "5000:5000"
