@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        AWS_REGION = "ap-south-1"
-        AWS_ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+        AWS_REGION = "ap-south-2"
+        AWS_ACCOUNT_ID = "278338841334"
         IMAGE_REPO_NAME = "hotel-management-repo"
         IMAGE_TAG = "latest"
     }
@@ -13,7 +13,7 @@ pipeline {
             steps {
                 git branch: 'main',
                     credentialsId: 'github-creds',
-                    url: 'https://github.com/YOUR_USERNAME/hotel-management-app.git'
+                    url: 'https://github.com/wackypiyush/hotel-management'
             }
         }
 
