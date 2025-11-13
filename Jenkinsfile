@@ -49,11 +49,10 @@ pipeline {
 
         stage('Deploy with Ansible') {
             steps {
-                script {
-                    sh '''
-                    ansible-playbook -i ansible/inventory ansible/deploy_app.yml
-                    '''
-                }
+                sh '''
+            export ANSIBLE_HOST_KEY_CHECKING=False
+            ansible-playbook -i ansible/inventory ansible/deploy_app.yml
+        '''
             }
         }
     }
