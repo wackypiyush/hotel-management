@@ -1,2 +1,2 @@
 [webserver]
-40.192.110.66 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/devops-key.pem
+18.61.83.156 ansible_user=ubuntu ansible_ssh_private_key_file=~/.ssh/devops-key.pem
