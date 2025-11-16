@@ -21,6 +21,23 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
+resource "aws_subnet" "public_subnet_b" {
+  vpc_id                  = aws_vpc.hotel_vpc.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "ap-south-2b"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "public-subnet-b"
+  }
+}
+
+resource "aws_route_table_association" "public_assoc_b" {
+  subnet_id      = aws_subnet.public_subnet_b.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+
 # ----- Internet Gateway -----
 resource "aws_internet_gateway" "hotel_gw" {
   vpc_id = aws_vpc.hotel_vpc.id
@@ -114,3 +131,5 @@ resource "aws_ecr_repository" "hotel_ecr" {
     Name = "hotel-ecr"
   }
 }
+
+

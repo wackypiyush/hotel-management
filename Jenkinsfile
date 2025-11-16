@@ -55,5 +55,17 @@ pipeline {
         '''
             }
         }
+
+        stage('Deploy to EKS with Helm') {
+    steps {
+        withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+            sh """
+            aws eks update-kubeconfig --region ${AWS_REGION} --name hotel-eks
+            helm upgrade --install hotel-release helm/hotel-app --set image.tag=${IMAGE_TAG}
+            """
+        }
+    }
+}
+
     }
 }
