@@ -58,25 +58,24 @@ pipeline {
 
         stage('Deploy to EKS') {
     steps {
-        withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
+        withAWS(region: "${AWS_REGION}") {
             sh """
-whoami
-ls -l /var/lib/jenkins/.kube
-cat /var/lib/jenkins/.kube/config | head -5
+                aws eks update-kubeconfig \
+                    --region ${AWS_REGION} \
+                    --name hotel-eks \
+                    --kubeconfig /var/lib/jenkins/.kube/config
 
+                export KUBECONFIG=/var/lib/jenkins/.kube/config
 
-mkdir -p /var/lib/jenkins/.kube
-aws eks update-kubeconfig --region ${AWS_REGION} --name hotel-eks --kubeconfig /var/lib/jenkins/.kube/config
-export KUBECONFIG=/var/lib/jenkins/.kube/config
-kubectl get nodes
+                kubectl get nodes
 
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/service.yaml
-
+                kubectl apply -f k8s/deployment.yaml
+                kubectl apply -f k8s/service.yaml
             """
         }
     }
 }
+
 
     }
 }
