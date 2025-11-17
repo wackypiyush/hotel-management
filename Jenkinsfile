@@ -61,8 +61,9 @@ pipeline {
         withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
             sh """
             aws eks update-kubeconfig --region ${AWS_REGION} --name hotel-eks
-            kubectl apply -f deployment.yaml
-            kubectl apply -f service.yaml
+            kubectl apply -f k8s/deployment.yaml
+            kubectl apply -f k8s/service.yaml
+
             """
         }
     }
