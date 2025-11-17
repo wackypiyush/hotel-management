@@ -27,9 +27,9 @@ resource "aws_eks_node_group" "hotel_ng" {
 
 
   scaling_config {
-    desired_size = 1
-    max_size     = 1
-    min_size     = 1
+    desired_size = 2 # Updated
+    max_size     = 2 # Updated
+    min_size     = 1 # Updated (keep 1 or set to 2)
   }
 
   instance_types = ["t3.small"]

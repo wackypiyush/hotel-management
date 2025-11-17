@@ -56,12 +56,13 @@ pipeline {
             }
         }
 
-        stage('Deploy to EKS with Helm') {
+        stage('Deploy to EKS') {
     steps {
         withAWS(credentials: 'aws-creds', region: "${AWS_REGION}") {
             sh """
             aws eks update-kubeconfig --region ${AWS_REGION} --name hotel-eks
-            helm upgrade --install hotel-release helm/hotel-app --set image.tag=${IMAGE_TAG}
+            kubectl apply -f deployment.yaml
+            kubectl apply -f service.yaml
             """
         }
     }
