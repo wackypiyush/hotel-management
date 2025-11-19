@@ -10,12 +10,6 @@
   shell: |
     aws ecr get-login-password --region ap-south-2 \
     | docker login --username AWS --password-stdin 278338841334.dkr.ecr.ap-south-2.amazonaws.com
-- name: Install pip
-  become: yes
-  apt:
-    name: python3-pip
-    state: present
-    update_cache: yes
 
 - name: Install Python Docker SDK
   become: yes
