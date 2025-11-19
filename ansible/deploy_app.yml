@@ -1,23 +1,47 @@
-- name: Install AWS CLI if not present
-  become: yes
-  apt:
-    name: awscli
-    state: present
-    update_cache: yes
+---
+- name: Deploy Hotel Management App
+  hosts: webserver
+  become: true
+  vars:
+    region: ap-south-2
+    account_id: 278338841334
+    repo_name: hotel-management-repo
+    image_tag: latest
 
-- name: Authenticate Docker to AWS ECR
-  become: yes
-  shell: |
-    aws ecr get-login-password --region ap-south-2 \
-    | docker login --username AWS --password-stdin 278338841334.dkr.ecr.ap-south-2.amazonaws.com
+  tasks:
+    - name: Install AWS CLI if not present
+      apt:
+        name: awscli
+        state: present
+        update_cache: yes
 
-- name: Install Python Docker SDK
-  become: yes
-  pip:
-    name: docker
+    - name: Authenticate Docker to AWS ECR
+      become: yes
+      shell: |
+        aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ account_id }}.dkr.ecr.{{ region }}.amazonaws.com
+      register: ecr_login
+      changed_when: "'Login Succeeded' in ecr_login.stdout"
+      
+    - name: Install Python Docker SDK
+      become: yes
+      pip:
+        name: docker
 
-- name: Pull image from ECR
-  become: yes
-  docker_image:
-    name: "278338841334.dkr.ecr.ap-south-2.amazonaws.com/hotel-management-repo:latest"
-    source: pull
+    - name: Pull image from ECR
+      community.docker.docker_image:
+        name: "{{ account_id }}.dkr.ecr.{{ region }}.amazonaws.com/{{ repo_name }}:{{ image_tag }}"
+        source: pull
+
+    - name: Stop old container if running
+      community.docker.docker_container:
+        name: hotel_app
+        state: stopped
+      ignore_errors: yes
+
+    - name: Run new container
+      community.docker.docker_container:
+        name: hotel_app
+        image: "{{ account_id }}.dkr.ecr.{{ region }}.amazonaws.com/{{ repo_name }}:{{ image_tag }}"
+        state: started
+        ports:
+          - "5000:5000"
