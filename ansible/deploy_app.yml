@@ -21,7 +21,13 @@
         aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ account_id }}.dkr.ecr.{{ region }}.amazonaws.com
       register: ecr_login
       changed_when: "'Login Succeeded' in ecr_login.stdout"
-      
+
+    - name: Install pip3
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: yes 
+             
     - name: Install Python Docker SDK
       become: yes
       pip:
