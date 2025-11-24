@@ -1,18 +1,7 @@
-grafana:
-  adminPassword: "admin123"
-
-  service:
-    type: LoadBalancer
-
 prometheus:
-  service:
-    type: LoadBalancer
-
   prometheusSpec:
-    additionalScrapeConfigs:
+    scrapeConfigs:
       - job_name: "hotel-app"
         metrics_path: /metrics
-        scrape_interval: 15s
         static_configs:
-          - targets:
-              - "hotel-service.default.svc.cluster.local:80"
+          - targets: ["hotel-service.default.svc.cluster.local:5000"]

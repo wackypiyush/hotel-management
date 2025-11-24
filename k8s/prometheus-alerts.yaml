@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: hotel-app-alerts
+  namespace: monitoring
+spec:
+  groups:
+  - name: hotel-alert-group
+    rules:
+    - alert: HighRequestRate
+      expr: rate(hotel_app_requests_total[1m]) > 10
+      for: 2m
+      labels:
+        severity: warning
+      annotations:
+        summary: "High request traffic on hotel management app"
+        description: "Requests per minute exceed 10"
